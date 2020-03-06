@@ -10,8 +10,8 @@
 
 #include "main.h"
 
-#define EEPROM_24LC028_DEVICE_ADDR (0x50 << 1)
-#define MAX_ADDR_24LC02B 	0xFF
+#define EEPROM_24LC028_DEVICE_ADDR 	(0x50 << 1)
+#define EEPROM_24LC028_MAX_ADDR		0xFF
 
 #define EEPROM_24LC028_OK 		0
 #define EEPROM_24LC028_NOUP		1
@@ -47,5 +47,6 @@ uint8_t EEPROM_24LC028_write_int32(uint8_t data_addr, int32_t *pData);
 uint8_t EEPROM_24LC028_write_float(uint8_t data_addr, float *pData);
 uint8_t EEPROM_24LC028_write_double(uint8_t data_addr, double *pData);
 
+void EEPROM_24LC028_memdump(uint8_t *pData, uint8_t len);
 
 #endif /* INC_EEPROM_24LC02B_H_ */
