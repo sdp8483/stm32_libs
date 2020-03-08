@@ -9,9 +9,12 @@
 #define INC_EEPROM_24LC02B_H_
 
 #include "main.h"
+#include <string.h>
+#include <stdlib.h>
 
 #define EEPROM_24LC02B_DEVICE_ADDR 	(0x50 << 1)
 #define EEPROM_24LC02B_MAX_ADDR		0xFF
+#define EEPROM_24LC02B_PAGE_SIZE	8
 
 #define EEPROM_24LC02B_OK 		0
 #define EEPROM_24LC02B_NOUP		1
@@ -48,5 +51,9 @@ uint8_t EEPROM_24LC02B_write_float(uint8_t data_addr, float *pData);
 uint8_t EEPROM_24LC02B_write_double(uint8_t data_addr, double *pData);
 
 void EEPROM_24LC02B_memdump(uint8_t *pData, uint8_t len);
+
+// char string data read and write
+void EEPROM_24LC028B_read_str(uint8_t data_addr, uint8_t *str, uint8_t len);
+uint8_t EEPROM_24LC028B_write_str(uint8_t data_addr, uint8_t *str, uint8_t len);
 
 #endif /* INC_EEPROM_24LC02B_H_ */
