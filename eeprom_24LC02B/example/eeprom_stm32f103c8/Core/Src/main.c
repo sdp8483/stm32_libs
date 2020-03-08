@@ -90,13 +90,17 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t data_in;
-  uint8_t data_out = 123;
+  uint8_t str_out[] = "sdperry.com";
+  uint8_t addr = 255 - sizeof("sdperry.com");
+  uint8_t str_in[sizeof(str_out)];
+  uint8_t status;
 
-  EEPROM_24LC028_write_uint8(0, &data_out);
-  HAL_Delay(10);
-  data_in = EEPROM_24LC028_read_uint8(0);
+  status = EEPROM_24LC028B_write_str(addr, str_out, sizeof(str_out));
+  HAL_Delay(5);
+  EEPROM_24LC028B_read_str(addr, str_in, sizeof(str_in));
 
+  uint8_t buffer[255];
+  EEPROM_24LC02B_memdump(buffer, sizeof(buffer));
 
   /* USER CODE END 2 */
 
