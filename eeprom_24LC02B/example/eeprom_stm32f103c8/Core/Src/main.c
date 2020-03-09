@@ -2,17 +2,18 @@
 /**
  ******************************************************************************
  * @file           : main.c
- * @brief          : Main program body
+ * @brief          : Example code to write and read data to 24LC02B EEPROM
  ******************************************************************************
- * @attention
+ * Edit "eeprom_24LC02B.h" to use the i2c port setup in CubeMX on the device,
+ * 	by default the port used is i2c1
  *
- * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
- * All rights reserved.</center></h2>
+ * Write data then read back data from the eeprom. The return status of all write
+ *  commands are saved in this code but it is not necessary. Write function
+ *  returns 0 if data is written, returns 1 if data is already on eeprom so no overwrite,
+ *  returns 2 if there is an error.
  *
- * This software component is licensed by ST under BSD 3-Clause license,
- * the "License"; You may not use this file except in compliance with the
- * License. You may obtain a copy of the License at:
- *                        opensource.org/licenses/BSD-3-Clause
+ * Set a debug breakpoint at the while(1) loop so that after running the processor
+ *  will pause and the memory can be inspected.
  *
  ******************************************************************************
  */
@@ -46,6 +47,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t noMatchCount = 0; // keep track of times data_out != data_in
+
 uint8_t data_addr = 0;	// first address to write below data to
 
 uint8_t uint8_out = 189;
@@ -128,11 +131,14 @@ int main(void) {
 	MX_GPIO_Init();
 	MX_I2C1_Init();
 	/* USER CODE BEGIN 2 */
-
 	// write uint8_t to eeprom, get the return status as uint8_status
 	uint8_status = EEPROM_24LC02B_write_uint8(data_addr, &uint8_out);
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	uint8_in = EEPROM_24LC02B_read_uint8(data_addr); // read back data
+
+	if (uint8_out != uint8_in) {
+		noMatchCount++;
+	}
 
 	data_addr += sizeof(uint8_t);
 
@@ -141,12 +147,20 @@ int main(void) {
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	int8_in = EEPROM_24LC02B_read_int8(data_addr); // read back data
 
+	if (int8_out != int8_in) {
+		noMatchCount++;
+	}
+
 	data_addr += sizeof(int8_t);
 
 	// write uint16_t to eeprom, get the return status as uint16_status
 	uint16_status = EEPROM_24LC02B_write_uint16(data_addr, &uint16_out);
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	uint16_in = EEPROM_24LC02B_read_uint16(data_addr);
+
+	if (uint16_out != uint16_in) {
+		noMatchCount++;
+	}
 
 	data_addr += sizeof(uint16_t);
 
@@ -155,12 +169,20 @@ int main(void) {
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	int16_in = EEPROM_24LC02B_read_int16(data_addr);
 
+	if (int16_out != int16_in) {
+		noMatchCount++;
+	}
+
 	data_addr += sizeof(int16_t);
 
 	// write uint32_t to eeprom, get the return status as uint32_status
 	uint32_status = EEPROM_24LC02B_write_uint32(data_addr, &uint32_out);
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	uint32_in = EEPROM_24LC02B_read_uint32(data_addr);
+
+	if (uint32_out != uint32_in) {
+		noMatchCount++;
+	}
 
 	data_addr += sizeof(uint32_t);
 
@@ -169,12 +191,20 @@ int main(void) {
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	int32_in = EEPROM_24LC02B_read_int32(data_addr);
 
+	if (int32_out != int32_in) {
+		noMatchCount++;
+	}
+
 	data_addr += sizeof(int32_t);
 
 	// write float to eeprom, get the return status as float_status
 	float_status = EEPROM_24LC02B_write_float(data_addr, &float_out);
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	float_in = EEPROM_24LC02B_read_float(data_addr);
+
+	if (float_out != float_in) {
+		noMatchCount++;
+	}
 
 	data_addr += sizeof(float);
 
@@ -183,6 +213,10 @@ int main(void) {
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	double_in = EEPROM_24LC02B_read_double(data_addr);
 
+	if (double_out != double_in) {
+		noMatchCount++;
+	}
+
 	data_addr += sizeof(double);
 
 	// write char string to eeprom, get the return status as str_status
@@ -190,8 +224,16 @@ int main(void) {
 	HAL_Delay(5);	// wait for eeprom to finish writing data
 	EEPROM_24LC02B_read_str(data_addr, str_in, sizeof(str_in));
 
+	if(strcmp((char *) str_in, (char *) str_out)) {
+		noMatchCount++;
+	}
+
 	// read the entire eeprom
 	EEPROM_24LC02B_memdump(buffer, sizeof(buffer));
+
+	if (noMatchCount != 0) {
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+	}
 
 	/* USER CODE END 2 */
 
@@ -227,8 +269,7 @@ void SystemClock_Config(void) {
 	}
 	/** Initializes the CPU, AHB and APB busses clocks
 	 */
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1
-			| RCC_CLOCKTYPE_PCLK2;
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
