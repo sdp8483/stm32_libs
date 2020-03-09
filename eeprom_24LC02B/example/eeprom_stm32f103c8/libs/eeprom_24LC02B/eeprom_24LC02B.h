@@ -53,7 +53,7 @@ uint8_t EEPROM_24LC02B_write_double(uint8_t data_addr, double *pData);
 void EEPROM_24LC02B_memdump(uint8_t *pData, uint8_t len);
 
 // char string data read and write
-void EEPROM_24LC028B_read_str(uint8_t data_addr, uint8_t *str, uint8_t len);
-uint8_t EEPROM_24LC028B_write_str(uint8_t data_addr, uint8_t *str, uint8_t len);
+void EEPROM_24LC02B_read_str(uint8_t data_addr, uint8_t *str, uint8_t len);
+uint8_t EEPROM_24LC02B_write_str(uint8_t data_addr, uint8_t *str, uint8_t len);
 
 #endif /* INC_EEPROM_24LC02B_H_ */
