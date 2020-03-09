@@ -462,7 +462,7 @@ void EEPROM_24LC02B_memdump(uint8_t *pData, uint8_t len) {
 	}
 }
 
-void EEPROM_24LC028B_read_str(uint8_t data_addr, uint8_t *str, uint8_t len) {
+void EEPROM_24LC02B_read_str(uint8_t data_addr, uint8_t *str, uint8_t len) {
 	// Make sure the memory address is not outside of the device address range
 	if ((data_addr + len) > EEPROM_24LC02B_MAX_ADDR) {
 		Error_Handler();
@@ -475,7 +475,7 @@ void EEPROM_24LC028B_read_str(uint8_t data_addr, uint8_t *str, uint8_t len) {
 	}
 }
 
-uint8_t EEPROM_24LC028B_write_str(uint8_t data_addr, uint8_t *str, uint8_t len) {
+uint8_t EEPROM_24LC02B_write_str(uint8_t data_addr, uint8_t *str, uint8_t len) {
 	// Make sure the memory address is not outside of the device address range
 	if ((data_addr + len) > EEPROM_24LC02B_MAX_ADDR) {
 		Error_Handler();
@@ -484,7 +484,7 @@ uint8_t EEPROM_24LC028B_write_str(uint8_t data_addr, uint8_t *str, uint8_t len) 
 
 	/* First read the address so we make sure we are not writing the same data */
 	uint8_t *buffer = (uint8_t *) malloc(len);
-	EEPROM_24LC028B_read_str(data_addr, buffer, len);
+	EEPROM_24LC02B_read_str(data_addr, buffer, len);
 
 	if(strcmp((char *)str, (char *)buffer) == 0) {
 		free(buffer);
@@ -495,7 +495,6 @@ uint8_t EEPROM_24LC028B_write_str(uint8_t data_addr, uint8_t *str, uint8_t len) 
 
 	/* Page Write check. Can only write sequential data within a page, a page is 8 bytes */
 	if (((data_addr % EEPROM_24LC02B_PAGE_SIZE) == 0) && (len < EEPROM_24LC02B_PAGE_SIZE)) {
-		// Data write is page aligned so writing sequentially is allowed
 		// Data write is page aligned so writing sequentially is allowed
 		while (HAL_I2C_Mem_Write(&EEPROM_24LC02B_I2C_PORT, EEPROM_24LC02B_DEVICE_ADDR, data_addr, 1, str, len, 10) != HAL_OK) {
 			if (HAL_I2C_GetError(&EEPROM_24LC02B_I2C_PORT) != HAL_I2C_ERROR_AF) {
