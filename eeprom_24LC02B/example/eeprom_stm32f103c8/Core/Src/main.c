@@ -46,13 +46,51 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t data_addr = 0;	// first address to write below data to
+
+uint8_t uint8_out = 189;
+uint8_t uint8_in;
+uint8_t uint8_status;
+
+int8_t int8_out = -89;
+int8_t int8_in;
+uint8_t int8_status;
+
+uint16_t uint16_out = 35987;
+uint16_t uint16_in;
+uint8_t uint16_status;
+
+int16_t int16_out = -15976;
+int16_t int16_in;
+uint8_t int16_status;
+
+uint32_t uint32_out = 789456123;
+uint32_t uint32_in;
+uint8_t uint32_status;
+
+int32_t int32_out = -789123;
+int32_t int32_in;
+uint8_t int32_status;
+
+float float_out = 69.1254;
+float float_in;
+uint8_t float_status;
+
+double double_out = 7.648216478936315;
+double double_in;
+uint8_t double_status;
+
+uint8_t str_out[] = "sdperry.com";
+uint8_t str_in[sizeof(str_out)];
+uint8_t str_status;
+
+uint8_t buffer[255];
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void str_readWrite(void);
 
 /* USER CODE END PFP */
 
@@ -91,10 +129,68 @@ int main(void) {
 	MX_I2C1_Init();
 	/* USER CODE BEGIN 2 */
 
-	// character string write and read to EEPROM
+	// write uint8_t to eeprom, get the return status as uint8_status
+	uint8_status = EEPROM_24LC02B_write_uint8(data_addr, &uint8_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	uint8_in = EEPROM_24LC02B_read_uint8(data_addr); // read back data
 
+	data_addr += sizeof(uint8_t);
 
-	uint8_t buffer[255];
+	// write int8_t to eeprom, get the return status as int8_status
+	int8_status = EEPROM_24LC02B_write_int8(data_addr, &int8_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	int8_in = EEPROM_24LC02B_read_int8(data_addr); // read back data
+
+	data_addr += sizeof(int8_t);
+
+	// write uint16_t to eeprom, get the return status as uint16_status
+	uint16_status = EEPROM_24LC02B_write_uint16(data_addr, &uint16_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	uint16_in = EEPROM_24LC02B_read_uint16(data_addr);
+
+	data_addr += sizeof(uint16_t);
+
+	// write int16_t to eeprom, get the return status as int16_status
+	int16_status = EEPROM_24LC02B_write_int16(data_addr, &int16_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	int16_in = EEPROM_24LC02B_read_int16(data_addr);
+
+	data_addr += sizeof(int16_t);
+
+	// write uint32_t to eeprom, get the return status as uint32_status
+	uint32_status = EEPROM_24LC02B_write_uint32(data_addr, &uint32_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	uint32_in = EEPROM_24LC02B_read_uint32(data_addr);
+
+	data_addr += sizeof(uint32_t);
+
+	// write int32_t to eeprom, get the return status as int32_status
+	int32_status = EEPROM_24LC02B_write_int32(data_addr, &int32_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	int32_in = EEPROM_24LC02B_read_int32(data_addr);
+
+	data_addr += sizeof(int32_t);
+
+	// write float to eeprom, get the return status as float_status
+	float_status = EEPROM_24LC02B_write_float(data_addr, &float_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	float_in = EEPROM_24LC02B_read_float(data_addr);
+
+	data_addr += sizeof(float);
+
+	// write double to eeprom, get the return status as double_status
+	double_status = EEPROM_24LC02B_write_double(data_addr, &double_out);
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	double_in = EEPROM_24LC02B_read_double(data_addr);
+
+	data_addr += sizeof(double);
+
+	// write char string to eeprom, get the return status as str_status
+	str_status = EEPROM_24LC02B_write_str(data_addr, str_out, sizeof(str_out));
+	HAL_Delay(5);	// wait for eeprom to finish writing data
+	EEPROM_24LC02B_read_str(data_addr, str_in, sizeof(str_in));
+
+	// read the entire eeprom
 	EEPROM_24LC02B_memdump(buffer, sizeof(buffer));
 
 	/* USER CODE END 2 */
@@ -144,33 +240,6 @@ void SystemClock_Config(void) {
 }
 
 /* USER CODE BEGIN 4 */
-void str_readWrite() {
-	uint8_t str_out[] = "sdperry.com";
-	uint8_t str_in[sizeof(str_out)];
-	uint8_t addr = EEPROM_24LC02B_MAX_ADDR - sizeof(str_out);
-	uint8_t str_status;
-
-	str_status = EEPROM_24LC02B_write_str(addr, str_out, sizeof(str_out));
-
-	switch (str_status) {
-	case EEPROM_24LC02B_OK:
-		// string written to eeprom
-		break;
-	case EEPROM_24LC02B_NOUP:
-		// string already in eeprom so no overwrite
-		break;
-
-	case EEPROM_24LC02B_ERROR:
-		// eeprom error
-		break;
-
-	default:
-		break;
-	}
-
-	HAL_Delay(1);					// wait for eeprom to finish write
-	EEPROM_24LC02B_read_str(addr, str_in, sizeof(str_in));
-}
 
 /* USER CODE END 4 */
 
