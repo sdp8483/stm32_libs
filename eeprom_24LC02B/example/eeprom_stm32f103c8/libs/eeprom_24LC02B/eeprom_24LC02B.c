@@ -403,7 +403,7 @@ uint8_t EEPROM_24LC02B_write_float(uint8_t data_addr, float *pData) {
 		// Data write is not page aligned so have to write a byte at a time
 		uint8_t *pt_b = (uint8_t*) pData;
 
-		for (uint8_t i=0; i<sizeof(int32_t); i++) {
+		for (uint8_t i=0; i<sizeof(float); i++) {
 			EEPROM_24LC02B_write_uint8(data_addr + i, pt_b);
 			pt_b++;
 		}
@@ -440,7 +440,7 @@ uint8_t EEPROM_24LC02B_write_double(uint8_t data_addr, double *pData) {
 		// Data write is not page aligned so have to write a byte at a time
 		uint8_t *pt_b = (uint8_t*) pData;
 
-		for (uint8_t i=0; i<sizeof(int32_t); i++) {
+		for (uint8_t i=0; i<sizeof(double); i++) {
 			EEPROM_24LC02B_write_uint8(data_addr + i, pt_b);
 			pt_b++;
 		}
