@@ -79,7 +79,7 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi) {
  * @Note					- 	none
  */
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle) {
-	uint8_t temp = 0;	// temp register
+	uint32_t temp = 0;	// temp register
 
 	// 1. configure the mode of the gpio pin
 	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG) {
