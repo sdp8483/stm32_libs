@@ -19,6 +19,31 @@
 #define GPIO_PIN_SET 		SET
 #define GPIO_PIN_RESET		RESET
 
+/* ARM Cortex Mx processor NVIC ISERx register address */
+#define NVIC_ISER0								((__vo uint32_t*)(0xE000E100))	// interrupt set enable register 0
+#define NVIC_ISER1								((__vo uint32_t*)(0xE000E104))	// interrupt set enable register 1
+#define NVIC_ISER2								((__vo uint32_t*)(0xE000E108))	// interrupt set enable register 2
+#define NVIC_ISER3								((__vo uint32_t*)(0xE000E10C))	// interrupt set enable register 3
+#define NVIC_ISER4								((__vo uint32_t*)(0xE000E110))	// interrupt set enable register 4
+#define NVIC_ISER5								((__vo uint32_t*)(0xE000E114))	// interrupt set enable register 5
+#define NVIC_ISER6								((__vo uint32_t*)(0xE000E118))	// interrupt set enable register 6
+#define NVIC_ISER7								((__vo uint32_t*)(0xE000E11C))	// interrupt set enable register 7
+
+/* ARM Cortex Mx processor NVIC ICERx register address */
+#define NVIC_ICER0								((__vo uint32_t*)(0xE000E180))	// interrupt clear enable register 0
+#define NVIC_ICER1								((__vo uint32_t*)(0xE000E184))	// interrupt clear enable register 1
+#define NVIC_ICER2								((__vo uint32_t*)(0xE000E188))	// interrupt clear enable register 2
+#define NVIC_ICER3								((__vo uint32_t*)(0xE000E18C))	// interrupt clear enable register 3
+#define NVIC_ICER4								((__vo uint32_t*)(0xE000E190))	// interrupt clear enable register 4
+#define NVIC_ICER5								((__vo uint32_t*)(0xE000E194))	// interrupt clear enable register 5
+#define NVIC_ICER6								((__vo uint32_t*)(0xE000E198))	// interrupt clear enable register 6
+#define NVIC_ICER7								((__vo uint32_t*)(0xE000E19C))	// interrupt clear enable register 7
+
+/* ARM Cortex Mx processor Priority register address */
+#define NVIC_PR_BASEADDR						((__vo uint32_t*) 0xE000E400)
+
+#define NO_PR_BITS_IMPLEMENTED					4
+
 /* base addresses of Flash and SRAM memories */
 #define FLASH_BASEADDR							(0x08000000U)		// Flash memory base address
 #define SRAM1_BASEADDR							(0x20000000U)		// SRAM1 base address, 112KB
@@ -63,8 +88,7 @@
 #define EXTI_BASEADDR							(APB2PERIPH_BASEADDR + 0x3C00)
 #define SYSCFG_BASEADDR							(APB2PERIPH_BASEADDR + 0x3800)
 
-/* peripheral register definition structures */
-
+/* peripheral register definition structure for GPIO */
 typedef struct {
 	__vo uint32_t MODER;							// GPIO port mode register        						Address offset 0x00
 	__vo uint32_t OTYPER;							// GPIO port output type register 						Address offset 0x04
@@ -78,6 +102,7 @@ typedef struct {
 													// AFR[1] GPIO port alternate function high register	Address offset 0x24
 } GPIO_RegDef_t;
 
+/* peripheral register definition structure for RCC */
 typedef struct {
 	__vo uint32_t CR;								// RCC clock control register							Address offset 0x00
 	__vo uint32_t PLLCFGR;							// RCC PLL configuration register						Address offset 0x04
@@ -117,6 +142,25 @@ typedef struct {
 	__vo uint32_t DCKCFGR;							// RCC Dedicated Clock Configuration Register			Address offset 0x8C
 } RCC_RegDef_t;
 
+/* peripheral register definition structure for EXTI */
+typedef struct {
+	__vo uint32_t IMR;								// EXTI Interrupt mask register							Address offset 0x00
+	__vo uint32_t EMR;								// EXTI	Event mask register								Address offset 0x04
+	__vo uint32_t RTSR;								// EXTI	Rising trigger selection register				Address offset 0x08
+	__vo uint32_t FTSR;								// EXTI	Falling trigger selection register				Address offset 0x0C
+	__vo uint32_t SWIER;							// EXTI	Software interrupt event register				Address offset 0x10
+	__vo uint32_t PR;								// EXTI	Pending register								Address offset 0x14
+} EXTI_RegDef_t;
+
+/* peripheral register definition structure for SYSCFG */
+typedef struct {
+	__vo uint32_t MEMRMP;							// SYSCFG memory remap register								Address offset 0x00
+	__vo uint32_t PMC;								// SYSCFG peripheral mode configuration register			Address offset 0x04
+	__vo uint32_t EXTICR[4];						// SYSCFG external interrupt configuration register 1 to 4	Address offset 0x08 - 0x14
+	uint32_t RESERVED1[2];							//															Address offset 0x18 - 0x1C
+	__vo uint32_t CMPCR;							// SYSCFG Compensation cell control register				Address offset 0x20
+} SYSCFG_RegDef_t;
+
 /* peripheral definitions (peripheral base addresses typecasted to xxx_RegDef_t) */
 #define GPIOA								((GPIO_RegDef_t*) GPIOA_BASEADDR)
 #define GPIOB								((GPIO_RegDef_t*) GPIOB_BASEADDR)
@@ -129,6 +173,10 @@ typedef struct {
 #define GPIOI								((GPIO_RegDef_t*) GPIOI_BASEADDR)
 
 #define RCC									((RCC_RegDef_t*) RCC_BASEADDR)
+
+#define EXTI								((EXTI_RegDef_t*) EXTI_BASEADDR)
+
+#define SYSCFG								((SYSCFG_RegDef_t*) SYSCFG_BASEADDR)
 
 /* Clock enable macros for GPIOx peripherals */
 #define GPIOA_PCLK_EN()						(RCC->AHB1ENR |= ( 1 << 0 ))
@@ -204,5 +252,42 @@ typedef struct {
 #define GPIOG_REG_RESET()					do{ (RCC->AHB1RSTR |= (1 << 6)); (RCC->AHB1RSTR &= ~(1 << 6)); } while(0)
 #define GPIOH_REG_RESET()					do{ (RCC->AHB1RSTR |= (1 << 7)); (RCC->AHB1RSTR &= ~(1 << 7)); } while(0)
 #define GPIOI_REG_RESET()					do{ (RCC->AHB1RSTR |= (1 << 8)); (RCC->AHB1RSTR &= ~(1 << 8)); } while(0)
+
+#define GPIO_BASEADD_TO_CODE(x)				((x == GPIOA) ? 0 : \
+											(x == GPIOB) ? 1 : \
+											(x == GPIOC) ? 2 : \
+											(x == GPIOD) ? 3 : \
+											(x == GPIOE) ? 4 : \
+											(x == GPIOF) ? 5 : \
+											(x == GPIOG) ? 6 : \
+											(x == GPIOH) ? 7 : \
+											(x == GPIOI) ? 8 : 0)
+
+/* IRQ (Interrupt Request) numbers */
+#define IRQ_NO_EXTI0						6
+#define IRQ_NO_EXTI1						7
+#define IRQ_NO_EXTI2						8
+#define IRQ_NO_EXTI3						9
+#define IRQ_NO_EXTI4						10
+#define IRQ_NO_EXTI9_5						23
+#define IRQ_NO_EXTI15_10					40
+
+/* IRQ priorities */
+#define NVIC_IRQ_PRI0						0
+#define NVIC_IRQ_PRI1						1
+#define NVIC_IRQ_PRI2						2
+#define NVIC_IRQ_PRI3						3
+#define NVIC_IRQ_PRI4						4
+#define NVIC_IRQ_PRI5						5
+#define NVIC_IRQ_PRI6						6
+#define NVIC_IRQ_PRI7						7
+#define NVIC_IRQ_PRI8						8
+#define NVIC_IRQ_PRI9						9
+#define NVIC_IRQ_PRI10						10
+#define NVIC_IRQ_PRI11						11
+#define NVIC_IRQ_PRI12						12
+#define NVIC_IRQ_PRI13						13
+#define NVIC_IRQ_PRI14						14
+#define NVIC_IRQ_PRI15						15
 
 #endif /* INC_STM32F407XX_H_ */
