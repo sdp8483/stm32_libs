@@ -13,8 +13,8 @@
 #include "string.h"
 #include "main.h"
 
-// #define LCD20xN 		// For 20xN LCDs
-#define LCD16xN			// For 16xN LCDs
+#define LCD20xN 		// For 20xN LCDs
+// #define LCD16xN			// For 16xN LCDs
 
 // For row start addresses
 extern const uint8_t ROW_16[];
@@ -45,17 +45,14 @@ extern const uint8_t ROW_20[];
 
 #define SET_DDRAM_ADDR 0x80				// Set DDRAM address
 
-
 /************************************** Helper macros **************************************/
 #define DELAY(X) HAL_Delay(X)
-
 
 /************************************** LCD defines **************************************/
 #define LCD_NIB 4
 #define LCD_BYTE 8
 #define LCD_DATA_REG 1
 #define LCD_COMMAND_REG 0
-
 
 /************************************** LCD typedefs **************************************/
 #define Lcd_PortType GPIO_TypeDef*
@@ -66,10 +63,9 @@ typedef enum {
 	LCD_8_BIT_MODE
 } Lcd_ModeTypeDef;
 
-
 typedef struct {
-	Lcd_PortType * data_port;
-	Lcd_PinType * data_pin;
+	Lcd_PortType *data_port;
+	Lcd_PinType *data_pin;
 
 	Lcd_PortType rs_port;
 	Lcd_PinType rs_pin;
@@ -81,18 +77,11 @@ typedef struct {
 
 } Lcd_HandleTypeDef;
 
-
 /************************************** Public functions **************************************/
-void Lcd_init(Lcd_HandleTypeDef * lcd);
-void Lcd_int(Lcd_HandleTypeDef * lcd, int number);
-void Lcd_clear(Lcd_HandleTypeDef * lcd);
-void Lcd_string(Lcd_HandleTypeDef * lcd, char * string);
-void Lcd_cursor(Lcd_HandleTypeDef * lcd, uint8_t row, uint8_t col);
-Lcd_HandleTypeDef Lcd_create(
-		Lcd_PortType port[], Lcd_PinType pin[],
-		Lcd_PortType rs_port, Lcd_PinType rs_pin,
-		Lcd_PortType en_port, Lcd_PinType en_pin, Lcd_ModeTypeDef mode);
-
-
+void Lcd_int(Lcd_HandleTypeDef *lcd, int number);
+void Lcd_clear(Lcd_HandleTypeDef *lcd);
+void Lcd_string(Lcd_HandleTypeDef *lcd, char *string);
+void Lcd_cursor(Lcd_HandleTypeDef *lcd, uint8_t row, uint8_t col);
+void Lcd_init(Lcd_HandleTypeDef *lcd, Lcd_PortType port[], Lcd_PinType pin[], Lcd_PortType rs_port, Lcd_PinType rs_pin, Lcd_PortType en_port, Lcd_PinType en_pin, Lcd_ModeTypeDef mode);
 
 #endif /* LCD_H_ */
