@@ -91,7 +91,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  lcd = Lcd_create(ports, pins, LCD_RS_GPIO_Port, LCD_RS_Pin, LCD_EN_GPIO_Port, LCD_EN_Pin, LCD_4_BIT_MODE);
+  Lcd_init(&lcd, ports, pins, LCD_RS_GPIO_Port, LCD_RS_Pin, LCD_EN_GPIO_Port, LCD_EN_Pin, LCD_4_BIT_MODE);
 
   Lcd_clear(&lcd);
   Lcd_string(&lcd, "Hello World!");
@@ -105,6 +105,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  Lcd_cursor(&lcd, 1, 0);
+	  Lcd_int(&lcd, HAL_GetTick());
   }
   /* USER CODE END 3 */
 }
