@@ -18,25 +18,33 @@ void encoderInit(Encoder_Handle_t *hencoder, TIM_HandleTypeDef *htim) {
 
 	hencoder->value = 0;
 	hencoder->valueOld = 0;
+	hencoder->direction = ENCODER_NOTURN;
 	hencoder->htim = htim;
 }
 
-
-int8_t encoderGetDirection(Encoder_Handle_t *hencoder) {
+//int8_t encoderGetDirection(Encoder_Handle_t *hencoder) {
+void encoderGetDirection(Encoder_Handle_t *hencoder) {
 	//hencoder->value = TIM4->CNT;
 	hencoder->value = hencoder->htim->Instance->CNT;
 
 	if (hencoder->value >= (hencoder->valueOld + 4)) {
 		hencoder->valueOld = hencoder->value;
-		return ENCODER_CW;
-	}
 
-	if (hencoder->value <= (hencoder->valueOld - 4)) {
+		hencoder->direction = ENCODER_CW;
+
+		//return ENCODER_CW;
+	} else if (hencoder->value <= (hencoder->valueOld - 4)) {
 		hencoder->valueOld = hencoder->value;
-		return ENCODER_CCW;
+
+		hencoder->direction = ENCODER_CCW;
+
+		//return ENCODER_CCW;
+	} else {
+
+		hencoder->direction = ENCODER_NOTURN;
 	}
 
-	return ENCODER_NOTURN;
+	//return ENCODER_NOTURN;
 }
 
 uint8_t buttonIsPressed(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint8_t beepOnPress) {

@@ -24,12 +24,13 @@ typedef struct __Encoder_Handle_t {
 	TIM_HandleTypeDef *htim;
 	int32_t value;
 	int32_t valueOld;
+	int8_t direction;
 } Encoder_Handle_t;
 
 void beep(void);												// generate beep using buzzer on RepRap Smart Controller
 
 void encoderInit(Encoder_Handle_t *hencoder, TIM_HandleTypeDef *htim);
-int8_t encoderGetDirection(Encoder_Handle_t *hencoder);
+void encoderGetDirection(Encoder_Handle_t *hencoder);
 
 uint8_t buttonIsPressed(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint8_t beepOnPress);
 
