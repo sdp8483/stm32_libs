@@ -20,11 +20,10 @@ void encoderInit(Encoder_Handle_t *hencoder, TIM_HandleTypeDef *htim) {
 	hencoder->valueOld = 0;
 	hencoder->direction = ENCODER_NOTURN;
 	hencoder->htim = htim;
+	hencoder->beep = BEEP_ON;
 }
 
-//int8_t encoderGetDirection(Encoder_Handle_t *hencoder) {
 void encoderGetDirection(Encoder_Handle_t *hencoder) {
-	//hencoder->value = TIM4->CNT;
 	hencoder->value = hencoder->htim->Instance->CNT;
 
 	if (hencoder->value >= (hencoder->valueOld + 4)) {
@@ -32,30 +31,26 @@ void encoderGetDirection(Encoder_Handle_t *hencoder) {
 
 		hencoder->direction = ENCODER_CW;
 
-		//return ENCODER_CW;
 	} else if (hencoder->value <= (hencoder->valueOld - 4)) {
 		hencoder->valueOld = hencoder->value;
 
 		hencoder->direction = ENCODER_CCW;
 
-		//return ENCODER_CCW;
 	} else {
 
 		hencoder->direction = ENCODER_NOTURN;
 	}
-
-	//return ENCODER_NOTURN;
 }
 
-uint8_t buttonIsPressed(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint8_t beepOnPress) {
-	if (HAL_GPIO_ReadPin(ENC_SW_GPIO_Port, ENC_SW_Pin) == 0) {		// encoder switch was pressed
+uint8_t buttonIsPressed(Encoder_Handle_t *hencoder) {
+	if (HAL_GPIO_ReadPin(hencoder->switchPort, hencoder->switchPin) == 0) {		// encoder switch was pressed
 		HAL_Delay(20);
-		if (HAL_GPIO_ReadPin(ENC_SW_GPIO_Port, ENC_SW_Pin) == 0) {
-			if (beepOnPress == BEEP_ON) {
+		if (HAL_GPIO_ReadPin(hencoder->switchPort, hencoder->switchPin) == 0) {
+			if (hencoder->beep == BEEP_ON) {
 				beep();
 			}
 
-			while (HAL_GPIO_ReadPin(ENC_SW_GPIO_Port, ENC_SW_Pin) == 0)
+			while (HAL_GPIO_ReadPin(hencoder->switchPort, hencoder->switchPin) == 0)
 				; // wait for user to release button
 			return 1;
 		}
